@@ -44,7 +44,7 @@ with st.sidebar:
     option_type = st.radio("How Do You Want To Test?", ("Upload Your Own Images", "Random Test"), 
                       index = 1)
     if option_type == "Random Test":
-        num_images = st.number_input("What's The Number Of Images?", min_value=1, max_value=20)
+        st.number_input("What's The Number Of Images?", min_value=1, max_value=20, key = "num_images")
     st.divider()
 
     st.write("To check out the model code, go to the ```Github Repo/architecture/```")
@@ -74,12 +74,36 @@ if option_type == "Upload Your Own Images":
                 st.write(pred_dict)
             with c:
                 pred_class = "### ```" + chosen_class.dict_max(pred_dict) + "```"
-                st.markdown("### The Predicted Class : ")
+                st.markdown("### Predicted Class : ")
                 st.markdown(pred_class)
             st.divider()
 
 if option_type == "Random Test":
-    st.write("I am working!")
+    state = st.button("Refresh Me!")
+    start = True
+    if state or start:
+        if state == False:
+            num_images = 1
+        state = False
+        start = False
+        
+        answers = chosen_class.predict_flower_dir(st.session_state.num_images)
+        for ans in answers:
+            img = Image.open(ans[0])
+            a, b, c = st.columns(3)
+            with a:
+                st.image(img)
+            with b:
+                st.write(ans[1])
+            with c:
+                pred_class = "### ```" + ans[2] + "```"
+                st.markdown("### Predicted Class : ")
+                st.markdown(pred_class)
+
+                act_class = "### ```" + ans[3] + "```"
+                st.markdown("### Actual Class : ")
+                st.markdown(act_class)
+
 
 # Outro 
 st.markdown("# By Grace Hephzibah ✨")
